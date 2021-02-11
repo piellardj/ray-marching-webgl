@@ -22,7 +22,31 @@ const data = {
         height: 512,
         enableFullscreen: true
     },
-    controlsSections: []
+    controlsSections: [
+        {
+            title: "Noise",
+            controls: [
+                {
+                    type: Demopage.supportedControls.Range,
+                    title: "Scale",
+                    id: "noise-scaling-range-id",
+                    min: 1,
+                    max: 20,
+                    value: 10,
+                    step: 0.1
+                },
+                {
+                    type: Demopage.supportedControls.Range,
+                    title: "Density",
+                    id: "noise-threshold-range-id",
+                    min: 0,
+                    max: 1,
+                    value: 0.5,
+                    step: 0.025
+                },
+            ],
+        }
+    ]
 };
 
 const SRC_DIR = path.resolve(__dirname);

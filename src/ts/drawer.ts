@@ -6,6 +6,7 @@ import { OrbitalCamera } from "./orbital-camera";
 declare const mat4: any;
 
 import "./page-interface-generated";
+import { Parameters } from "./parameters";
 
 const UNIT_CUBE = new Float32Array([
     0, 0, 0,
@@ -68,9 +69,12 @@ class Drawer {
         this.pMatrix = mat4.create();
         this.mvpMatrix = mat4.create();
         this.camera = new OrbitalCamera([.5, .5, .5], 2);
+        this.camera.phi = 1.1;
+        this.camera.theta = 0.5;
 
-        const minPhi = 0.001;
-        const maxPhi = Math.PI - 0.001;
+        const EPSILON = 1.0;
+        const minPhi = EPSILON;
+        const maxPhi = Math.PI - EPSILON;
         Page.Canvas.Observers.mouseDrag.push((dX: number, dY: number) => {
             this.camera.theta -= 0.5 * 2 * 3.14159 * dX;
             this.camera.phi -= 0.5 * 2 * 3 * dY;
@@ -111,14 +115,14 @@ class Drawer {
     }
 
     public draw(): void {
-
-
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
         if (this.shader !== null) {
             this.gl.enable(this.gl.CULL_FACE);
             this.gl.enable(this.gl.DEPTH_TEST);
 
+            this.shader.u["uScaling"].value = Parameters.scaling;
+            this.shader.u["uThreshold"].value = 0.3 * (Parameters.threshold - 0.5);
             this.shader.use();
             this.shader.bindUniformsAndAttributes();
             this.gl.drawArrays(this.gl.TRIANGLES, 0, 3 * 2 * 6);
