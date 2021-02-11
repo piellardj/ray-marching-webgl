@@ -1,8 +1,11 @@
-attribute vec3 aCoords; // {-1,1}^3
+attribute vec3 aPosition;
 
-// uniform vec2 uScreenSize;
+uniform mat4 uMVPMatrix;
+
+varying vec3 vPosition;
 
 void main(void)
 {
-    gl_Position = vec4(aCoords.xy * 0.5, 0, 1);
+    gl_Position = uMVPMatrix * vec4(aPosition, 1.0);
+    vPosition = 0.99 * aPosition;
 }

@@ -13,6 +13,7 @@ const data = {
     additionalLinks: [],
     styleFiles: [],
     scriptFiles: [
+        "script/gl-matrix-2.5.1-min.js",
         "script/main.min.js"
     ],
     indicators: [],
@@ -39,4 +40,4 @@ const SCRIPT_DECLARATION_FILEPATH = path.join(SRC_DIR, "ts", "page-interface-gen
 fs.writeFileSync(SCRIPT_DECLARATION_FILEPATH, buildResult.pageScriptDeclaration);
 
 fse.copySync(path.join(SRC_DIR, "shaders"), path.join(DEST_DIR, "shaders"));
-fse.copySync(path.join(SRC_DIR, "resources"), path.join(DEST_DIR, "resources"));
+fse.copySync(path.join(SRC_DIR, "resources", "script"), path.join(DEST_DIR, "script"));
