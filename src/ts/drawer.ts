@@ -2,6 +2,7 @@ import { Shader } from "./gl-utils/shader";
 import { VBO } from "./gl-utils/vbo";
 import * as ShaderManager from "./gl-utils/shader-manager";
 import { OrbitalCamera } from "./orbital-camera";
+import { getTime } from "./time";
 
 declare const mat4: any;
 
@@ -125,6 +126,7 @@ class Drawer {
             this.shader.u["uScaling"].value = Parameters.scaling;
             this.shader.u["uThreshold"].value = 0.3 * (Parameters.threshold - 0.5);
             this.shader.u["uShape"].value = Parameters.shape;
+            this.shader.u["uTime"].value = 0.1 * getTime();
 
             this.shader.use();
             this.shader.bindUniformsAndAttributes();
