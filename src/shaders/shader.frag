@@ -79,10 +79,8 @@ float sdfSphere(vec3 position)
 
 float sdfNoise(vec3 position)
 {  
-    vec3 toCenter = position - vec3(0.5);
-    float smoothing = smoothstep(0.0, 0.5, dot(toCenter, toCenter));
-    // position = toCenter / length(toCenter) + 0.5;
-    position = toCenter * pow(length(toCenter), 0.8) + 0.5;
+    float smoothing = smoothstep(0.0, 0.5, dot(position, position));
+    position = position * pow(length(position), 0.8);
     return (gradientNoise(uScaling * position) + smoothing) - uThreshold;
 }
 
@@ -95,8 +93,7 @@ float sdf(vec3 position)
 bool isInsideCube(const vec3 position)
 {
     const float CUBE_LIMIT = 0.51;
-    vec3 toCenter = abs(position - vec3(0.5));
-    return (step(toCenter.x, CUBE_LIMIT) * step(toCenter.y, CUBE_LIMIT) * step(toCenter.z, CUBE_LIMIT)) > 0.5;
+    return (step(position.x, CUBE_LIMIT) * step(position.y, CUBE_LIMIT) * step(position.z, CUBE_LIMIT)) > 0.5;
 }
 
 vec3 computeNormal(const vec3 position)

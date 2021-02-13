@@ -9,47 +9,47 @@ import "./page-interface-generated";
 import { Parameters } from "./parameters";
 
 const UNIT_CUBE = new Float32Array([
-    0, 0, 0,
-    1, 0, 0,
-    0, 0, 1,
-    1, 0, 0,
-    1, 0, 1,
-    0, 0, 1,
+    -.5, -.5, -.5,
+    +.5, -.5, -.5,
+    -.5, -.5, +.5,
+    +.5, -.5, -.5,
+    +.5, -.5, +.5,
+    -.5, -.5, +.5,
 
-    1, 0, 0,
-    1, 1, 0,
-    1, 0, 1,
-    1, 1, 0,
-    1, 1, 1,
-    1, 0, 1,
+    +.5, -.5, -.5,
+    +.5, +.5, -.5,
+    +.5, -.5, +.5,
+    +.5, +.5, -.5,
+    +.5, +.5, +.5,
+    +.5, -.5, +.5,
 
-    0, 0, 1,
-    1, 0, 1,
-    0, 1, 1,
-    1, 0, 1,
-    1, 1, 1,
-    0, 1, 1,
+    -.5, -.5, +.5,
+    +.5, -.5, +.5,
+    -.5, +.5, +.5,
+    +.5, -.5, +.5,
+    +.5, +.5, +.5,
+    -.5, +.5, +.5,
 
-    0, 1, 0,
-    0, 1, 1,
-    1, 1, 0,
-    1, 1, 0,
-    0, 1, 1,
-    1, 1, 1,
+    -.5, +.5, -.5,
+    -.5, +.5, +.5,
+    +.5, +.5, -.5,
+    +.5, +.5, -.5,
+    -.5, +.5, +.5,
+    +.5, +.5, +.5,
 
-    0, 0, 0,
-    0, 0, 1,
-    0, 1, 0,
-    0, 1, 0,
-    0, 0, 1,
-    0, 1, 1,
+    -.5, -.5, -.5,
+    -.5, -.5, +.5,
+    -.5, +.5, -.5,
+    -.5, +.5, -.5,
+    -.5, -.5, +.5,
+    -.5, +.5, +.5,
 
-    0, 0, 0,
-    0, 1, 0,
-    1, 0, 0,
-    1, 0, 0,
-    0, 1, 0,
-    1, 1, 0,
+    -.5, -.5, -.5,
+    -.5, +.5, -.5,
+    +.5, -.5, -.5,
+    +.5, -.5, -.5,
+    -.5, +.5, -.5,
+    +.5, +.5, -.5,
 ]);
 
 class Drawer {
@@ -68,7 +68,7 @@ class Drawer {
 
         this.pMatrix = mat4.create();
         this.mvpMatrix = mat4.create();
-        this.camera = new OrbitalCamera([.5, .5, .5], 2);
+        this.camera = new OrbitalCamera([0, 0, 0], 2);
         this.camera.phi = 1.1;
         this.camera.theta = 0.5;
 
@@ -126,7 +126,7 @@ class Drawer {
             this.shader.u["uThreshold"].value = 0.3 * (Parameters.threshold - 0.5);
             this.shader.use();
             this.shader.bindUniformsAndAttributes();
-            this.gl.drawArrays(this.gl.TRIANGLES, 0, 3 * 2 * 6);
+            this.gl.drawArrays(this.gl.TRIANGLES, 0 , 3 * 2 * 6);
         }
     }
 
