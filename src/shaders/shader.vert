@@ -7,5 +7,5 @@ varying vec3 vPosition;
 void main(void)
 {
     gl_Position = uMVPMatrix * vec4(aPosition, 1.0);
-    vPosition = 0.99 * aPosition;
+    vPosition = aPosition;
 }

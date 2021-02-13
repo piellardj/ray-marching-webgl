@@ -119,8 +119,9 @@ class Drawer {
 
         if (this.shader !== null) {
             this.gl.enable(this.gl.CULL_FACE);
-            this.gl.enable(this.gl.DEPTH_TEST);
+            this.gl.disable(this.gl.DEPTH_TEST);
 
+            this.shader.u["uEyePosition"].value = this.camera.eyePos;
             this.shader.u["uScaling"].value = Parameters.scaling;
             this.shader.u["uThreshold"].value = 0.3 * (Parameters.threshold - 0.5);
             this.shader.use();

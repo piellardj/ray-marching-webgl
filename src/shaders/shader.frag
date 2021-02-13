@@ -7,8 +7,9 @@
 uniform float uScaling;
 uniform float uThreshold;
 
-varying vec3 vPosition;
+uniform vec3 uEyePosition;
 
+varying vec3 vPosition;
 
 // returns a random in [-0.5, 0.5]^3, centered on {0}^3
 vec3 random(vec3 i) {
@@ -68,11 +69,66 @@ float gradientNoise(const vec3 coords)
     return noiseXXX;
 }
 
+float sdfSphere(vec3 position)
+{
+    const float RADIUS = 0.5;
+    const vec3 CENTER = vec3(0.7);
+
+    return length(position - CENTER) - RADIUS;
+}
+
+float sdfNoise(vec3 position)
+{  
+    vec3 toCenter = position - vec3(0.5);
+    float smoothing = smoothstep(0.0, 0.5, dot(toCenter, toCenter));
+    // position = toCenter / length(toCenter) + 0.5;
+    position = toCenter * pow(length(toCenter), 0.8) + 0.5;
+    return (gradientNoise(uScaling * position) + smoothing) - uThreshold;
+}
+
+float sdf(vec3 position)
+{
+    return sdfNoise(position);
+    // return sdfSphere(position);
+}
+
+bool isInsideCube(const vec3 position)
+{
+    const float CUBE_LIMIT = 0.51;
+    vec3 toCenter = abs(position - vec3(0.5));
+    return (step(toCenter.x, CUBE_LIMIT) * step(toCenter.y, CUBE_LIMIT) * step(toCenter.z, CUBE_LIMIT)) > 0.5;
+}
+
 void main(void)
 {
+    const float EPSILON = 0.01;
+
+    vec3 fromEye = vPosition - uEyePosition;
+    vec3 fromEyeNormalized = normalize(fromEye);
+
+    float currentDistance = length(fromEye);
+    vec3 fromEyeCurrent = vPosition;
+
+    for (int iStep = 0; iStep < 200; iStep++) {
+        fromEyeCurrent = uEyePosition + currentDistance * fromEyeNormalized; // this line is in theory useless but u bug causes the compilation to fail if it is not there
+        float sdfValue = sdf(fromEyeCurrent);
+
+        if (sdfValue < EPSILON) {
+            break;
+        }
+
+        currentDistance += 0.005;
+        fromEyeCurrent = uEyePosition + currentDistance * fromEyeNormalized;
+
+        if (!isInsideCube(fromEyeCurrent) || iStep == 199) {
+            discard;
+        }
+    }
+
     // const float STEP = 5.0;
     // float color = step(1.0, mod(floor(vPosition.x * STEP) + floor(vPosition.y * STEP) + floor(vPosition.z * STEP), 2.0));
-    float noise = gradientNoise(uScaling * vPosition);
-    float thresholdNoise = step(uThreshold, noise);
-    gl_FragColor = vec4(vec3(thresholdNoise), 1.0);
+
+    // float noise = gradientNoise(uScaling * fromEyeCurrent);
+    // float thresholdNoise = step(uThreshold, noise);
+    gl_FragColor = vec4(vec3((currentDistance - 0.5) / 1.5), 1.0);
 }
