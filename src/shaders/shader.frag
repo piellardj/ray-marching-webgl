@@ -6,6 +6,7 @@
 
 uniform float uScaling;
 uniform float uThreshold;
+uniform float uShape;
 
 uniform vec3 uEyePosition;
 
@@ -80,7 +81,7 @@ float sdfSphere(vec3 position)
 float sdfNoise(vec3 position)
 {  
     float smoothing = smoothstep(0.0, 0.5, dot(position, position));
-    position = position * pow(length(position), 0.8);
+    position = position * pow(2.0 * length(position), uShape) / 2.0;
     return (gradientNoise(uScaling * position) + smoothing) - uThreshold;
 }
 

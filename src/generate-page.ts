@@ -31,7 +31,7 @@ const data = {
                     title: "Scale",
                     id: "noise-scaling-range-id",
                     min: 1,
-                    max: 20,
+                    max: 50,
                     value: 10,
                     step: 0.1
                 },
@@ -43,6 +43,15 @@ const data = {
                     max: 1,
                     value: 0.5,
                     step: 0.025
+                },
+                {
+                    type: Demopage.supportedControls.Range,
+                    title: "Shape",
+                    id: "noise-shape-range-id",
+                    min: -1,
+                    max: 4,
+                    value: 0,
+                    step: 0.1
                 },
             ],
         }

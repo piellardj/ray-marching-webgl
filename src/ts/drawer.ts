@@ -124,9 +124,11 @@ class Drawer {
             this.shader.u["uEyePosition"].value = this.camera.eyePos;
             this.shader.u["uScaling"].value = Parameters.scaling;
             this.shader.u["uThreshold"].value = 0.3 * (Parameters.threshold - 0.5);
+            this.shader.u["uShape"].value = Parameters.shape;
+
             this.shader.use();
             this.shader.bindUniformsAndAttributes();
-            this.gl.drawArrays(this.gl.TRIANGLES, 0 , 3 * 2 * 6);
+            this.gl.drawArrays(this.gl.TRIANGLES, 0, 3 * 2 * 6);
         }
     }
 
