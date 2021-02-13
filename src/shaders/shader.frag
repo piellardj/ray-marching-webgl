@@ -99,6 +99,16 @@ bool isInsideCube(const vec3 position)
     return (step(toCenter.x, CUBE_LIMIT) * step(toCenter.y, CUBE_LIMIT) * step(toCenter.z, CUBE_LIMIT)) > 0.5;
 }
 
+vec3 computeNormal(const vec3 position)
+{
+    const float EPSILON = 0.001;
+    return normalize(vec3(
+        sdf(position + vec3(EPSILON, 0, 0)) - sdf(position - vec3(EPSILON, 0, 0)),
+        sdf(position + vec3(0, EPSILON, 0)) - sdf(position - vec3(0, EPSILON, 0)),
+        sdf(position + vec3(0, 0, EPSILON)) - sdf(position - vec3(0, 0, EPSILON))
+    ));
+}
+
 void main(void)
 {
     const float EPSILON = 0.01;
@@ -130,5 +140,12 @@ void main(void)
 
     // float noise = gradientNoise(uScaling * fromEyeCurrent);
     // float thresholdNoise = step(uThreshold, noise);
-    gl_FragColor = vec4(vec3((currentDistance - 0.5) / 1.5), 1.0);
+    vec3 normal = computeNormal(fromEyeCurrent);
+    vec3 baseColor = vec3(1.0);
+    float ambient = 0.1;
+    float diffuse = 0.9 * (0.5 + 0.5 * dot(normalize(vec3(1,1,1)), normal));
+    vec3 color = 0.5 + 0.5 * normal;
+    color = baseColor * (ambient + diffuse);
+    gl_FragColor = vec4(color, 1.0);
+    //gl_FragColor = vec4(vec3((currentDistance - 0.5) / 1.5), 1.0);
 }
