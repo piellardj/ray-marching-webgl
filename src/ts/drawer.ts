@@ -83,7 +83,7 @@ class Drawer {
             this.updateMVPMatrix();
         });
 
-        const minDist = 1.42;
+        const minDist = 0.6;
         const maxDist = 3;
         Page.Canvas.Observers.mouseWheel.push((delta: number) => {
             let d = this.camera.distance + 0.2 * delta;
@@ -124,7 +124,7 @@ class Drawer {
 
             this.shader.u["uEyePosition"].value = this.camera.eyePos;
             this.shader.u["uScaling"].value = Parameters.scaling;
-            this.shader.u["uThreshold"].value = 0.3 * (Parameters.threshold - 0.5);
+            this.shader.u["uThreshold"].value = Parameters.threshold;
             this.shader.u["uShape"].value = Parameters.shape;
             this.shader.u["uTime"].value = 0.1 * getTime();
 
