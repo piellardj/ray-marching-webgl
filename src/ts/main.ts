@@ -30,15 +30,6 @@ function main(): void {
         requestAnimationFrame(mainLoop);
     }
     mainLoop();
-    // Page.Canvas.showLoader(true);
-    // ShaderPicker.loadShaders((success: boolean) => {
-    //     if (success) {
-    //         Page.Canvas.showLoader(false);
-    //         requestAnimationFrame(mainLoop);
-    //     } else {
-    //         Page.Demopage.setErrorMessage("shaders-loading", "Failed to load shaders.");
-    //     }
-    // });
 }
 
 main();
