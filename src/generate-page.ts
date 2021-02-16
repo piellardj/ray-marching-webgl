@@ -16,7 +16,12 @@ const data = {
         "script/gl-matrix-2.5.1-min.js",
         "script/main.min.js"
     ],
-    indicators: [],
+    indicators: [
+        {
+            id: "fps-indicator",
+            label: "FPS"
+        }
+    ],
     canvas: {
         width: 512,
         height: 512,

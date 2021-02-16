@@ -1,9 +1,10 @@
 import * as GLCanvas from "./gl-utils/gl-canvas";
 import { gl } from "./gl-utils/gl-canvas";
 import { Viewport } from "./gl-utils/viewport";
-// import * as ShaderPicker from "./shader-picker";
 
 import { Drawer } from "./drawer";
+
+import { updateFpsIndicator } from "./indicators";
 
 import "./page-interface-generated";
 
@@ -24,12 +25,17 @@ function main(): void {
 
     const drawer = new Drawer(gl);
 
-    function mainLoop(): void {
+
+    let lastFrameTime = 0;
+    function mainLoop(time: number): void {
+        updateFpsIndicator(1000 / (time - lastFrameTime));
+        lastFrameTime = time;
+
         adjustCanvasSize();
         drawer.draw();
         requestAnimationFrame(mainLoop);
     }
-    mainLoop();
+    mainLoop(1);
 }
 
 main();
