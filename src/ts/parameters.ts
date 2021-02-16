@@ -5,6 +5,7 @@ const controlId = {
     NOISE_SCALING: "noise-scaling-range-id",
     NOISE_THRESHOLD: "noise-threshold-range-id",
     NOISE_SHAPE: "noise-shape-range-id",
+    AVOID_CLIPPING: "avoid-clipping-checkbox-id",
     SPEED: "speed-range-id",
 };
 
@@ -23,6 +24,10 @@ abstract class Parameters {
 
     public static get threshold(): number {
         return Page.Range.getValue(controlId.NOISE_THRESHOLD);
+    }
+
+    public static get avoidClipping(): boolean {
+        return Page.Checkbox.isChecked(controlId.AVOID_CLIPPING);
     }
 
     public static get shape(): number {

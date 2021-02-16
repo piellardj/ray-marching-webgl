@@ -8,6 +8,7 @@ uniform float uScaling;
 uniform float uThreshold;
 uniform float uShape;
 uniform float uTime;
+uniform float uAvoidClipping;
 
 uniform vec3 uEyePosition;
 
@@ -242,7 +243,7 @@ float spaceWarp(const vec4 position)
 
 float sdfNoise(vec4 position)
 {  
-    float smoothing = 1.0 - 1.0 * smoothstep(0.1, 0.25, dot(position.xyz, position.xyz));
+    float smoothing = 1.0 - uAvoidClipping * smoothstep(0.1, 0.25, dot(position.xyz, position.xyz));
     position.xyz *= spaceWarp(position);
     // float noise = simplex3d(uScaling * position.xyz);
     // float noise = gradientNoise4D(vec4(position.xyz * uScaling, 10.0 * position.w));

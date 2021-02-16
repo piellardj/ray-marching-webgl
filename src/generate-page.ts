@@ -45,6 +45,12 @@ const data = {
                     step: 0.025
                 },
                 {
+                    type: Demopage.supportedControls.Checkbox,
+                    title: "Avoid clipping",
+                    id: "avoid-clipping-checkbox-id",
+                    checked: true,
+                },
+                {
                     type: Demopage.supportedControls.Range,
                     title: "Shape",
                     id: "noise-shape-range-id",

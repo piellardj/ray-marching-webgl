@@ -134,6 +134,7 @@ class Drawer {
             this.shader.u["uThreshold"].value = Parameters.threshold;
             this.shader.u["uShape"].value = Parameters.shape;
             this.shader.u["uTime"].value = 0.1 * getTime();
+            this.shader.u["uAvoidClipping"].value = +Parameters.avoidClipping;
             this.shader.bindUniforms();
             this.gl.drawArrays(this.gl.TRIANGLES, 0, 3 * 2 * 6);
         }
