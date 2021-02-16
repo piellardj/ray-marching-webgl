@@ -107,6 +107,9 @@ class Drawer {
                     this.shader = builtShader;
 
                     this.shader.a["aPosition"].VBO = this.VBO;
+                    this.shader.use();
+                    this.shader.bindAttributes();
+
                     this.shader.u["uMVPMatrix"].value = this.mvpMatrix;
                 } else {
                     Page.Demopage.setErrorMessage("shader_load_fail", "Failed to load/build the shader.");
@@ -131,9 +134,7 @@ class Drawer {
             this.shader.u["uThreshold"].value = Parameters.threshold;
             this.shader.u["uShape"].value = Parameters.shape;
             this.shader.u["uTime"].value = 0.1 * getTime();
-
-            this.shader.use();
-            this.shader.bindUniformsAndAttributes();
+            this.shader.bindUniforms();
             this.gl.drawArrays(this.gl.TRIANGLES, 0, 3 * 2 * 6);
         }
     }
