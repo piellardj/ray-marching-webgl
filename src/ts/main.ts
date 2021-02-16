@@ -11,7 +11,6 @@ function main(): void {
     if (!GLCanvas.initGL()) {
         return;
     }
-    gl.clearColor(0.282, 0.439, 0.702, 1); // same color as the SVG background
 
     function adjustCanvasSize(): void {
         GLCanvas.adjustSize(false);

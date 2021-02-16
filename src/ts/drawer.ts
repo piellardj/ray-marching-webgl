@@ -83,7 +83,7 @@ class Drawer {
             this.updateMVPMatrix();
         });
 
-        const minDist = 0.6;
+        const minDist = 0.52;
         const maxDist = 3;
         Page.Canvas.Observers.mouseWheel.push((delta: number) => {
             let d = this.camera.distance + 0.2 * delta;
@@ -113,15 +113,19 @@ class Drawer {
                 }
             }
         );
+
+        gl.enable(gl.CULL_FACE);
+        gl.frontFace(gl.CCW);
+        gl.cullFace(gl.FRONT);
+        gl.disable(gl.DEPTH_TEST);
+        gl.disable(gl.BLEND);
+        gl.clearColor(0.282, 0.439, 0.702, 1);
     }
 
     public draw(): void {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
         if (this.shader !== null) {
-            this.gl.enable(this.gl.CULL_FACE);
-            this.gl.disable(this.gl.DEPTH_TEST);
-
             this.shader.u["uEyePosition"].value = this.camera.eyePos;
             this.shader.u["uScaling"].value = Parameters.scaling;
             this.shader.u["uThreshold"].value = Parameters.threshold;
