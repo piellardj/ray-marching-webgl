@@ -113,5 +113,4 @@ buildResult.pageScriptDeclaration = "/* tslint:disable */\n" + buildResult.pageS
 const SCRIPT_DECLARATION_FILEPATH = path.join(SRC_DIR, "ts", "page-interface-generated.ts");
 fs.writeFileSync(SCRIPT_DECLARATION_FILEPATH, buildResult.pageScriptDeclaration);
 
-fse.copySync(path.join(SRC_DIR, "shaders"), path.join(DEST_DIR, "shaders"));
 fse.copySync(path.join(SRC_DIR, "resources", "script"), path.join(DEST_DIR, "script"));
