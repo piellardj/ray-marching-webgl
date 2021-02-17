@@ -7,7 +7,7 @@ import { getTime } from "./time";
 declare const mat4: any;
 
 import "./page-interface-generated";
-import { Parameters } from "./parameters";
+import { ENoiseType, Parameters } from "./parameters";
 
 const UNIT_CUBE = new Float32Array([
     -.5, -.5, -.5,
@@ -61,7 +61,9 @@ class Drawer {
 
     private readonly camera: OrbitalCamera;
 
-    private shader: Shader = null
+    private shaderNoise3D: Shader | undefined | null = undefined;
+    private shaderGradient3D: Shader | undefined | null = undefined;
+    private shaderSimplex3D: Shader | undefined | null = undefined;
 
     public constructor(gl: WebGLRenderingContext) {
         this.gl = gl;
@@ -97,26 +99,6 @@ class Drawer {
             this.updateMVPMatrix();
         });
 
-        ShaderManager.buildShader(
-            {
-                fragmentFilename: "shader.frag",
-                vertexFilename: "shader.vert",
-                injected: {},
-            }, (builtShader: Shader | null) => {
-                if (builtShader !== null) {
-                    this.shader = builtShader;
-
-                    this.shader.a["aPosition"].VBO = this.VBO;
-                    this.shader.use();
-                    this.shader.bindAttributes();
-
-                    this.shader.u["uMVPMatrix"].value = this.mvpMatrix;
-                } else {
-                    Page.Demopage.setErrorMessage("shader_load_fail", "Failed to load/build the shader.");
-                }
-            }
-        );
-
         gl.enable(gl.CULL_FACE);
         gl.frontFace(gl.CCW);
         gl.cullFace(gl.FRONT);
@@ -128,14 +110,19 @@ class Drawer {
     public draw(): void {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        if (this.shader !== null) {
-            this.shader.u["uEyePosition"].value = this.camera.eyePos;
-            this.shader.u["uScaling"].value = Parameters.scaling;
-            this.shader.u["uThreshold"].value = Parameters.threshold;
-            this.shader.u["uShape"].value = Parameters.shape;
-            this.shader.u["uTime"].value = 0.1 * getTime();
-            this.shader.u["uAvoidClipping"].value = +Parameters.avoidClipping;
-            this.shader.bindUniforms();
+        const shader = this.chooseShader();
+        if (shader !== null) {
+            shader.a["aPosition"].VBO = this.VBO;
+            shader.u["uMVPMatrix"].value = this.mvpMatrix;
+            shader.u["uEyePosition"].value = this.camera.eyePos;
+            shader.u["uScaling"].value = Parameters.scaling;
+            shader.u["uThreshold"].value = Parameters.threshold;
+            shader.u["uShape"].value = Parameters.shape;
+            shader.u["uTime"].value = 0.1 * getTime();
+            shader.u["uAvoidClipping"].value = +Parameters.avoidClipping;
+
+            shader.use();
+            shader.bindUniformsAndAttributes();
             this.gl.drawArrays(this.gl.TRIANGLES, 0, 3 * 2 * 6);
         }
     }
@@ -143,6 +130,49 @@ class Drawer {
     private updateMVPMatrix(): void {
         mat4.perspective(this.pMatrix, 45, Page.Canvas.getAspectRatio(), 0.1, 100.0);
         mat4.multiply(this.mvpMatrix, this.pMatrix, this.camera.viewMatrix);
+    }
+
+    private chooseShader(): Shader | null {
+        function buildShader(fragmentFilename: string, callback: (shader: Shader) => unknown): void {
+            ShaderManager.buildShader(
+                {
+                    fragmentFilename,
+                    vertexFilename: "shader.vert",
+                    injected: {},
+                }, (builtShader: Shader | null) => {
+                    if (builtShader !== null) {
+                        callback(builtShader);
+                    } else {
+                        Page.Demopage.setErrorMessage(`shader_load_fail_${fragmentFilename}`, `Failed to load/build the shader '${fragmentFilename}'.`);
+                    }
+                }
+            );
+        }
+
+        if (Parameters.noiseType === ENoiseType.VALUE) {
+            if (!!this.shaderNoise3D) {
+                return this.shaderNoise3D;
+            } else if (typeof this.shaderNoise3D === "undefined") {
+                this.shaderNoise3D = null;
+                buildShader("shader-value-3d.frag", (shader: Shader) => { this.shaderNoise3D = shader; });
+            }
+        } else if (Parameters.noiseType === ENoiseType.GRADIENT) {
+            if (!!this.shaderGradient3D) {
+                return this.shaderGradient3D;
+            } else if (typeof this.shaderGradient3D === "undefined") {
+                this.shaderGradient3D = null;
+                buildShader("shader-gradient-3d.frag", (shader: Shader) => { this.shaderGradient3D = shader; });
+            }
+        } else {
+            if (!!this.shaderSimplex3D) {
+                return this.shaderSimplex3D;
+            } else if (typeof this.shaderSimplex3D === "undefined") {
+                this.shaderSimplex3D = null;
+                buildShader("shader-simplex-3d.frag", (shader: Shader) => { this.shaderSimplex3D = shader; });
+            }
+        }
+
+        return null;
     }
 }
 

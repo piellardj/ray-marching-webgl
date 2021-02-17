@@ -32,6 +32,27 @@ const data = {
             title: "Noise",
             controls: [
                 {
+                    type: Demopage.supportedControls.Tabs,
+                    title: "Type",
+                    id: "noise-type",
+                    unique: true,
+                    options: [
+                        {
+                            value: "value",
+                            label: "Value"
+                        },
+                        {
+                            value: "gradient",
+                            label: "Gradient",
+                            checked: true
+                        },
+                        {
+                            value: "simplex",
+                            label: "Simplex"
+                        },
+                    ]
+                },
+                {
                     type: Demopage.supportedControls.Range,
                     title: "Scale",
                     id: "noise-scaling-range-id",

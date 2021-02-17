@@ -2,6 +2,7 @@ import "./page-interface-generated";
 
 /* === IDs ============================================================ */
 const controlId = {
+    NOISE_TYPE: "noise-type",
     NOISE_SCALING: "noise-scaling-range-id",
     NOISE_THRESHOLD: "noise-threshold-range-id",
     NOISE_SHAPE: "noise-shape-range-id",
@@ -17,7 +18,17 @@ Page.Range.addObserver(controlId.SPEED, () => {
     }
 });
 
+enum ENoiseType {
+    VALUE = "value",
+    GRADIENT = "gradient",
+    SIMPLEX = "simplex",
+}
+
 abstract class Parameters {
+    public static get noiseType(): ENoiseType {
+        return Page.Tabs.getValues(controlId.NOISE_TYPE)[0] as ENoiseType;
+    }
+
     public static get scaling(): number {
         return Page.Range.getValue(controlId.NOISE_SCALING);
     }
@@ -43,5 +54,6 @@ abstract class Parameters {
 }
 
 export {
+    ENoiseType,
     Parameters,
 }
