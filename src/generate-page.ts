@@ -143,6 +143,12 @@ const data = {
             title: "Display",
             controls: [
                 {
+                    type: Demopage.supportedControls.ColorPicker,
+                    title: "Background",
+                    id: "background-color-picker-id",
+                    defaultValueHex: "#4F6FB1",
+                },
+                {
                     type: Demopage.supportedControls.Checkbox,
                     title: "Indicators",
                     id: "display-indicators-checkbox-id",

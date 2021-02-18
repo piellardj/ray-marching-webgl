@@ -117,7 +117,13 @@ class Drawer {
         gl.cullFace(gl.FRONT);
         gl.disable(gl.DEPTH_TEST);
         gl.disable(gl.BLEND);
-        gl.clearColor(0.282, 0.439, 0.702, 1);
+
+        function updateBackgroundColor(): void {
+            const backgroundColor = Parameters.backgroundColor;
+            gl.clearColor(backgroundColor.r / 255, backgroundColor.g / 255, backgroundColor.b / 255, 1);
+        }
+        Parameters.addBackgroundColorObserver(updateBackgroundColor);
+        updateBackgroundColor();
     }
 
     public draw(): void {
