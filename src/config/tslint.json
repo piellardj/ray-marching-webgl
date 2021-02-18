@@ -41,7 +41,8 @@
         ],
         "strict-boolean-expressions": [
             true,
-            "allow-string"
+            "allow-string",
+            "allow-undefined-union"
         ],
         "typedef": [
             true,
