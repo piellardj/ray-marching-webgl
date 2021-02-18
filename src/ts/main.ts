@@ -4,8 +4,6 @@ import { Viewport } from "./gl-utils/viewport";
 
 import { Drawer } from "./drawer";
 
-import { updateFpsIndicator } from "./indicators";
-
 import "./page-interface-generated";
 
 function main(): void {
@@ -25,17 +23,25 @@ function main(): void {
 
     const drawer = new Drawer(gl);
 
+    let timeOfLastFPSUpdate = performance.now();
+    let framesSinceLastFPSUpdate = 0;
+    setInterval(() => {
+        const now = performance.now();
+        const fps = 1000 * framesSinceLastFPSUpdate / (now - timeOfLastFPSUpdate);
+        timeOfLastFPSUpdate = now;
+        framesSinceLastFPSUpdate = 0;
 
-    let lastFrameTime = 0;
-    function mainLoop(time: number): void {
-        updateFpsIndicator(1000 / (time - lastFrameTime));
-        lastFrameTime = time;
+        Page.Canvas.setIndicatorText("fps-indicator", Math.round(fps).toString());
+    }, 500);
+
+    function mainLoop(): void {
+        framesSinceLastFPSUpdate++;
 
         adjustCanvasSize();
         drawer.draw();
         requestAnimationFrame(mainLoop);
     }
-    mainLoop(1);
+    mainLoop();
 }
 
 main();
