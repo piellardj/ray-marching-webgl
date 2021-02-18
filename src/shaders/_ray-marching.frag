@@ -31,7 +31,6 @@ float sdfNoise(vec4 position)
 float sdf(vec4 position)
 {
     return sdfNoise(position);
-    // return sdfSphere(position);
 }
 
 bool isInBounds(const vec4 position)
@@ -39,8 +38,15 @@ bool isInBounds(const vec4 position)
     return dot(position.xyz, position.xyz) <= 0.25;
 }
 
-vec3 computeNormal(const vec4 position)
+vec3 computeNormal(vec4 position, const vec3 fromEyeNormalized)
 {
+    // adjust position to have smooth normals
+    for (int iStep = 0; iStep < 10; iStep++) {
+        float currentFieldValue = sdf(position);
+        float adaptativeStepSize = 0.1 * currentFieldValue;
+        position.xyz += adaptativeStepSize * fromEyeNormalized;
+    }
+
     const float EPSILON = 0.0001;
     float base = sdf(position);
     return normalize(vec3(
@@ -83,44 +89,38 @@ void main(void)
 
     float currentDistance = computeSphereIntersection(fromEyeNormalized);
     if (currentDistance <= 0.0) {
+        // no intersection with bounding sphere, exit early
         discard;
     }
 
     vec4 currentPosition = vec4(uEyePosition + currentDistance * fromEyeNormalized, uTime);
-
+    float currentFieldValue = sdf(currentPosition);
     const float EPSILON = 0.0001;
-    if (sdf(currentPosition) < EPSILON) {
+    if (currentFieldValue < EPSILON) {
+        // border of the sphere is already solid, simplify normal computing and exit early
         vec3 normal = normalize(currentPosition.xyz) + 0.0 * uScaling * uThreshold * uShape;
         gl_FragColor = computeColor(currentPosition, normal);
         return;
     }
 
     const int NB_STEPS = #INJECT(STEPS_COUNT);
-    float stepSize = 1.0 / float(NB_STEPS);
+    float fixedStepSize = 1.0 / float(NB_STEPS);
     for (int iStep = 0; iStep < NB_STEPS; iStep++) {
-        currentPosition.xyz = uEyePosition + currentDistance * fromEyeNormalized; // this line is in theory useless but u bug causes the compilation to fail if it is not there
-        float sdfValue = sdf(currentPosition);
-
-        if (sdfValue <= EPSILON) {
+        currentDistance += fixedStepSize;
+        currentPosition.xyz = uEyePosition + currentDistance * fromEyeNormalized;
+        
+        if (!isInBounds(currentPosition)) {
             break;
         }
 
-        currentDistance += stepSize;
-        currentPosition.xyz = uEyePosition + currentDistance * fromEyeNormalized;
-
-        if (!isInBounds(currentPosition) || iStep == NB_STEPS -1) {
-            discard;
+        currentFieldValue = sdf(currentPosition);
+        if (currentFieldValue <= EPSILON) {
+            // found close enough intersection of the ray with the geometry
+            vec3 normal = computeNormal(currentPosition, fromEyeNormalized);
+            gl_FragColor = computeColor(currentPosition, normal);
             return;
         }
     }
 
-    // adjust position to have smooth normals
-    for (int iStep = 0; iStep < 10; iStep++) {
-        float sdfValue = sdf(currentPosition);
-        currentDistance += 0.1 * sdfValue;
-        currentPosition.xyz = uEyePosition + currentDistance * fromEyeNormalized; // this line is in theory useless but u bug causes the compilation to fail if it is not there
-    }
-
-    vec3 normal = computeNormal(currentPosition);
-    gl_FragColor = computeColor(currentPosition, normal);
+    discard;
 }
