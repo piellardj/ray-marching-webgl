@@ -95,10 +95,10 @@ const data = {
                 },
                 {
                     type: Demopage.supportedControls.Range,
-                    title: "Shape",
+                    title: "Deformation",
                     id: "noise-shape-range-id",
-                    min: -1,
-                    max: 4,
+                    min: -0.8,
+                    max: 1.5,
                     value: 0,
                     step: 0.1
                 },
