@@ -138,6 +138,17 @@ const data = {
                     ]
                 }
             ]
+        },
+        {
+            title: "Display",
+            controls: [
+                {
+                    type: Demopage.supportedControls.Checkbox,
+                    title: "Indicators",
+                    id: "display-indicators-checkbox-id",
+                    checked: true,
+                },
+            ]
         }
     ]
 };

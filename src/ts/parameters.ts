@@ -10,6 +10,7 @@ const controlId = {
     AVOID_CLIPPING: "avoid-clipping-checkbox-id",
     SPEED: "speed-range-id",
     RAY_MARCHING_PRECISION: "ray-marching-stepsize",
+    DISPLAY_INDICATORS: "display-indicators-checkbox-id",
 };
 
 type Observer = () => unknown;
@@ -19,6 +20,13 @@ Page.Range.addObserver(controlId.SPEED, () => {
         observer();
     }
 });
+
+function updateIndicatorsVisibility(): void {
+    const visible = Page.Checkbox.isChecked(controlId.DISPLAY_INDICATORS);
+    Page.Canvas.setIndicatorsVisibility(visible);
+}
+updateIndicatorsVisibility();
+Page.Checkbox.addObserver(controlId.DISPLAY_INDICATORS, updateIndicatorsVisibility);
 
 enum ENoiseType {
     VALUE = "value",
