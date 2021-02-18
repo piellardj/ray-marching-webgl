@@ -86,7 +86,7 @@ class Drawer {
         this.mvpMatrix = mat4.create();
         this.camera = new OrbitalCamera([0, 0, 0], 1);
         this.camera.phi = 1.1;
-        this.camera.theta = 0.5;
+        this.camera.theta = 2;
 
         const EPSILON = 1.0;
         const minPhi = EPSILON;
