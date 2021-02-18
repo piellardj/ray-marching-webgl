@@ -16,6 +16,8 @@ const float G3 =  0.1666667;
 
 /* 3d simplex noise */
 float noise(vec3 p) {
+    p *= 0.55; // scale to homogenize with other noises
+
 	 /* 1. find current tetrahedron T and it's four vertices */
 	 /* s, s+i1, s+i2, s+1.0 - absolute skewed (integer) coordinates of T vertices */
 	 /* x, x1, x2, x3 - unskewed coordinates of p relative to each of T vertices*/
