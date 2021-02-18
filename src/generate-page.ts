@@ -4,10 +4,10 @@ import * as path from "path";
 import { Demopage } from "webpage-templates";
 
 const data = {
-    title: "TITLE",
-    description: "DESCRIPTION",
+    title: "Ray marching",
+    description: "Basic ray marching experiments with a 3D or 4D noise field",
     introduction: [
-        "INTRO"
+        "This project is a simple experiment combining fixed-step ray marching and noise generation in three or four dimensions.",
     ],
     githubProjectName: "ray-marching-webgl",
     additionalLinks: [],
