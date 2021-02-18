@@ -125,6 +125,7 @@ class Drawer {
 
         const shader = this.chooseShader();
         if (shader !== null) {
+            Page.Canvas.showLoader(false);
             shader.a["aPosition"].VBO = this.VBO;
             shader.u["uMVPMatrix"].value = this.mvpMatrix;
             shader.u["uEyePosition"].value = this.camera.eyePos;
@@ -169,6 +170,7 @@ class Drawer {
                 const precision = Parameters.rayMarchingPrecision;
 
                 if (typeof group[precision] === "undefined") {
+                    Page.Canvas.showLoader(true);
                     group[precision] = null;
                     buildShader(`shader-${name}-${dimension}.frag`, precision, (shader: Shader) => {
                         group[precision] = shader;
