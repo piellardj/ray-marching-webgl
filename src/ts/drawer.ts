@@ -166,7 +166,7 @@ class Drawer {
         }
 
         function chooseVariation(name: string, baseGroup: IShaderVariations): Shader | null {
-            function choosePrecision(name: string, dimension: string, group: IShaderPrecisions): Shader | null {
+            function choosePrecision(dimension: string, group: IShaderPrecisions): Shader | null {
                 const precision = Parameters.rayMarchingPrecision;
 
                 if (typeof group[precision] === "undefined") {
@@ -181,10 +181,10 @@ class Drawer {
 
             if (Parameters.noiseDimension === ENoiseDimension.THREE_D) {
                 baseGroup.threeDimensions = baseGroup.threeDimensions || {};
-                return choosePrecision(name, Parameters.noiseDimension, baseGroup.threeDimensions);
+                return choosePrecision(Parameters.noiseDimension, baseGroup.threeDimensions);
             } else {
                 baseGroup.fourDimensions = baseGroup.fourDimensions || {};
-                return choosePrecision(name, Parameters.noiseDimension, baseGroup.fourDimensions);
+                return choosePrecision(Parameters.noiseDimension, baseGroup.fourDimensions);
             }
         }
 
