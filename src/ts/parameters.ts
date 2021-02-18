@@ -3,11 +3,13 @@ import "./page-interface-generated";
 /* === IDs ============================================================ */
 const controlId = {
     NOISE_TYPE: "noise-type",
+    NOISE_DIMENSION: "noise-dimension",
     NOISE_SCALING: "noise-scaling-range-id",
     NOISE_THRESHOLD: "noise-threshold-range-id",
     NOISE_SHAPE: "noise-shape-range-id",
     AVOID_CLIPPING: "avoid-clipping-checkbox-id",
     SPEED: "speed-range-id",
+    RAY_MARCHING_PRECISION: "ray-marching-stepsize",
 };
 
 type Observer = () => unknown;
@@ -24,9 +26,18 @@ enum ENoiseType {
     SIMPLEX = "simplex",
 }
 
+enum ENoiseDimension {
+    THREE_D = "3d",
+    FOUR_D = "4d",
+}
+
 abstract class Parameters {
     public static get noiseType(): ENoiseType {
         return Page.Tabs.getValues(controlId.NOISE_TYPE)[0] as ENoiseType;
+    }
+
+    public static get noiseDimension(): ENoiseDimension {
+        return Page.Tabs.getValues(controlId.NOISE_DIMENSION)[0] as ENoiseDimension;
     }
 
     public static get scaling(): number {
@@ -51,9 +62,14 @@ abstract class Parameters {
     public static addSpeedChangeObserver(observer: Observer): void {
         speedChangeObservers.push(observer);
     }
+
+    public static get rayMarchingPrecision(): number {
+        return +Page.Tabs.getValues(controlId.RAY_MARCHING_PRECISION)[0];
+    }
 }
 
 export {
+    ENoiseDimension,
     ENoiseType,
     Parameters,
 }

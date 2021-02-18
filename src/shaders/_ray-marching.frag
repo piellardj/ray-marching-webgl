@@ -18,8 +18,13 @@ float spaceWarp(const vec4 position)
 float sdfNoise(vec4 position)
 {  
     float smoothing = 1.0 - uAvoidClipping * smoothstep(0.1, 0.25, dot(position.xyz, position.xyz));
-    position.xyz *= spaceWarp(position);
-    float noise = noise(position.xyz * uScaling + vec3(10.0 * position.w));
+    position.xyz *= spaceWarp(position) * uScaling;
+
+#if (DIMENSION == 3)
+    float noise = noise(position.xyz + position.w);
+#else
+    float noise = noise(position);
+#endif
     return (0.5 + 0.5 * noise) - uThreshold * smoothing;
 }
 
@@ -90,7 +95,7 @@ void main(void)
         return;
     }
 
-    const int NB_STEPS = 100;
+    const int NB_STEPS = #INJECT(STEPS_COUNT);
     float stepSize = 1.0 / float(NB_STEPS);
     for (int iStep = 0; iStep < NB_STEPS; iStep++) {
         currentPosition.xyz = uEyePosition + currentDistance * fromEyeNormalized; // this line is in theory useless but u bug causes the compilation to fail if it is not there

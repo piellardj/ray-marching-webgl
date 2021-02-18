@@ -53,20 +53,37 @@ const data = {
                     ]
                 },
                 {
+                    type: Demopage.supportedControls.Tabs,
+                    title: "Dimension",
+                    id: "noise-dimension",
+                    unique: true,
+                    options: [
+                        {
+                            value: "3d",
+                            label: "3D",
+                            checked: true
+                        },
+                        {
+                            value: "4d",
+                            label: "4D",
+                        }
+                    ]
+                },
+                {
                     type: Demopage.supportedControls.Range,
                     title: "Scale",
                     id: "noise-scaling-range-id",
-                    min: 1,
+                    min: 5,
                     max: 50,
-                    value: 10,
+                    value: 25,
                     step: 0.1
                 },
                 {
                     type: Demopage.supportedControls.Range,
                     title: "Density",
                     id: "noise-threshold-range-id",
-                    min: 0,
-                    max: 1,
+                    min: 0.2,
+                    max: 0.8,
                     value: 0.5,
                     step: 0.025
                 },
@@ -95,6 +112,32 @@ const data = {
                     step: 0.01
                 },
             ],
+        },
+        {
+            title: "Ray marching",
+            controls: [
+                {
+                    type: Demopage.supportedControls.Tabs,
+                    title: "Quality",
+                    id: "ray-marching-stepsize",
+                    unique: true,
+                    options: [
+                        {
+                            value: "50",
+                            label: "Low"
+                        },
+                        {
+                            value: "100",
+                            label: "Medium",
+                            checked: true
+                        },
+                        {
+                            value: "200",
+                            label: "High"
+                        },
+                    ]
+                }
+            ]
         }
     ]
 };

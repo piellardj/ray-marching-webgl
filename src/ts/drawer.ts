@@ -7,7 +7,7 @@ import { getTime } from "./time";
 declare const mat4: any;
 
 import "./page-interface-generated";
-import { ENoiseType, Parameters } from "./parameters";
+import { ENoiseDimension, ENoiseType, Parameters } from "./parameters";
 
 const UNIT_CUBE = new Float32Array([
     -.5, -.5, -.5,
@@ -53,6 +53,21 @@ const UNIT_CUBE = new Float32Array([
     +.5, +.5, -.5,
 ]);
 
+interface IShaderPrecisions {
+    [stepsCount: number]: Shader | null;
+}
+
+interface IShaderVariations {
+    threeDimensions?: IShaderPrecisions;
+    fourDimensions?: IShaderPrecisions;
+}
+
+interface IShadersCollection {
+    valueNoise?: IShaderVariations;
+    gradientNoise?: IShaderVariations;
+    simplexNoise?: IShaderVariations;
+}
+
 class Drawer {
     private readonly gl: WebGLRenderingContext
     private readonly VBO: VBO;
@@ -61,9 +76,7 @@ class Drawer {
 
     private readonly camera: OrbitalCamera;
 
-    private shaderNoise3D: Shader | undefined | null = undefined;
-    private shaderGradient3D: Shader | undefined | null = undefined;
-    private shaderSimplex3D: Shader | undefined | null = undefined;
+    private shaders: IShadersCollection = undefined;
 
     public constructor(gl: WebGLRenderingContext) {
         this.gl = gl;
@@ -71,7 +84,7 @@ class Drawer {
 
         this.pMatrix = mat4.create();
         this.mvpMatrix = mat4.create();
-        this.camera = new OrbitalCamera([0, 0, 0], 2);
+        this.camera = new OrbitalCamera([0, 0, 0], 1);
         this.camera.phi = 1.1;
         this.camera.theta = 0.5;
 
@@ -118,7 +131,7 @@ class Drawer {
             shader.u["uScaling"].value = Parameters.scaling;
             shader.u["uThreshold"].value = Parameters.threshold;
             shader.u["uShape"].value = Parameters.shape;
-            shader.u["uTime"].value = 0.1 * getTime();
+            shader.u["uTime"].value = getTime();
             shader.u["uAvoidClipping"].value = +Parameters.avoidClipping;
 
             shader.use();
@@ -133,12 +146,14 @@ class Drawer {
     }
 
     private chooseShader(): Shader | null {
-        function buildShader(fragmentFilename: string, callback: (shader: Shader) => unknown): void {
+        function buildShader(fragmentFilename: string, nbSteps: number, callback: (shader: Shader) => unknown): void {
             ShaderManager.buildShader(
                 {
                     fragmentFilename,
                     vertexFilename: "shader.vert",
-                    injected: {},
+                    injected: {
+                        "STEPS_COUNT": nbSteps.toString(),
+                    },
                 }, (builtShader: Shader | null) => {
                     if (builtShader !== null) {
                         callback(builtShader);
@@ -149,30 +164,40 @@ class Drawer {
             );
         }
 
-        if (Parameters.noiseType === ENoiseType.VALUE) {
-            if (!!this.shaderNoise3D) {
-                return this.shaderNoise3D;
-            } else if (typeof this.shaderNoise3D === "undefined") {
-                this.shaderNoise3D = null;
-                buildShader("shader-value-3d.frag", (shader: Shader) => { this.shaderNoise3D = shader; });
+        function chooseVariation(name: string, baseGroup: IShaderVariations): Shader | null {
+            function choosePrecision(name: string, dimension: string, group: IShaderPrecisions): Shader | null {
+                const precision = Parameters.rayMarchingPrecision;
+
+                if (typeof group[precision] === "undefined") {
+                    group[precision] = null;
+                    buildShader(`shader-${name}-${dimension}.frag`, precision, (shader: Shader) => {
+                        group[precision] = shader;
+                    });
+                }
+                return group[precision];
             }
-        } else if (Parameters.noiseType === ENoiseType.GRADIENT) {
-            if (!!this.shaderGradient3D) {
-                return this.shaderGradient3D;
-            } else if (typeof this.shaderGradient3D === "undefined") {
-                this.shaderGradient3D = null;
-                buildShader("shader-gradient-3d.frag", (shader: Shader) => { this.shaderGradient3D = shader; });
-            }
-        } else {
-            if (!!this.shaderSimplex3D) {
-                return this.shaderSimplex3D;
-            } else if (typeof this.shaderSimplex3D === "undefined") {
-                this.shaderSimplex3D = null;
-                buildShader("shader-simplex-3d.frag", (shader: Shader) => { this.shaderSimplex3D = shader; });
+
+            if (Parameters.noiseDimension === ENoiseDimension.THREE_D) {
+                baseGroup.threeDimensions = baseGroup.threeDimensions || {};
+                return choosePrecision(name, Parameters.noiseDimension, baseGroup.threeDimensions);
+            } else {
+                baseGroup.fourDimensions = baseGroup.fourDimensions || {};
+                return choosePrecision(name, Parameters.noiseDimension, baseGroup.fourDimensions);
             }
         }
 
-        return null;
+        this.shaders = this.shaders || {};
+
+        if (Parameters.noiseType === ENoiseType.VALUE) {
+            this.shaders.valueNoise = this.shaders.valueNoise || {};
+            return chooseVariation(Parameters.noiseType, this.shaders.valueNoise);
+        } else if (Parameters.noiseType === ENoiseType.GRADIENT) {
+            this.shaders.gradientNoise = this.shaders.gradientNoise || {};
+            return chooseVariation(Parameters.noiseType, this.shaders.gradientNoise);
+        } else {
+            this.shaders.simplexNoise = this.shaders.simplexNoise || {};
+            return chooseVariation(Parameters.noiseType, this.shaders.simplexNoise);
+        }
     }
 }
 
