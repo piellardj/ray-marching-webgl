@@ -1,3 +1,14 @@
+/* https://www.shadertoy.com/view/XsX3zB
+ *
+ * The MIT License
+ * Copyright © 2013 Nikita Miropolskiy
+ * 
+ * ( license has been changed from CCA-NC-SA 3.0 to MIT
+ *
+ *   but thanks for attributing your source code when deriving from this sample 
+ *   with a following link: https://www.shadertoy.com/view/XsX3zB )
+ */
+ 
 /* discontinuous pseudorandom uniformly distributed in [-0.5, +0.5]^3 */
 vec3 random3(vec3 c) {
 	float j = 4096.0*sin(dot(c,vec3(17.0, 59.4, 15.0)));
