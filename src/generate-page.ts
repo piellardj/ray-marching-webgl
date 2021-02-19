@@ -7,7 +7,7 @@ const data = {
     title: "Ray marching",
     description: "Basic ray marching experiments with a 3D or 4D noise field",
     introduction: [
-        "This project is a simple experiment that uses basic ray marching to see what various 3D or 4D noise fields look like.",
+        "This project is a simple experiment that uses basic ray marching to visualize various 3D or 4D noise fields.",
     ],
     githubProjectName: "ray-marching-webgl",
     additionalLinks: [],
