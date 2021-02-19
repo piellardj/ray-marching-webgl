@@ -136,7 +136,13 @@ const data = {
                             label: "High"
                         },
                     ]
-                }
+                },
+                {
+                    type: Demopage.supportedControls.Checkbox,
+                    title: "Smooth normals",
+                    id: "smooth-normals-checkbox-id",
+                    checked: true,
+                },
             ]
         },
         {

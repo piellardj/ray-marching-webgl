@@ -10,6 +10,7 @@ const controlId = {
     AVOID_CLIPPING: "avoid-clipping-checkbox-id",
     SPEED: "speed-range-id",
     RAY_MARCHING_PRECISION: "ray-marching-stepsize",
+    SMOOTH_NORMALS: "smooth-normals-checkbox-id",
     BACKGROUND_COLOR_PICKER: "background-color-picker-id",
     DISPLAY_INDICATORS: "display-indicators-checkbox-id",
 };
@@ -102,6 +103,10 @@ abstract class Parameters {
 
     public static get rayMarchingPrecision(): number {
         return +Page.Tabs.getValues(controlId.RAY_MARCHING_PRECISION)[0];
+    }
+
+    public static get smoothNormals(): boolean {
+        return Page.Checkbox.isChecked(controlId.SMOOTH_NORMALS);
     }
 }
 

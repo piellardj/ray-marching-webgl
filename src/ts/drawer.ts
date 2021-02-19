@@ -140,6 +140,7 @@ class Drawer {
             shader.u["uShape"].value = Parameters.shape;
             shader.u["uTime"].value = getTime();
             shader.u["uAvoidClipping"].value = +Parameters.avoidClipping;
+            shader.u["uSmoothNormals"].value = Parameters.smoothNormals;
 
             shader.use();
             shader.bindUniformsAndAttributes();

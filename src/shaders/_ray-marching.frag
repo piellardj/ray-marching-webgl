@@ -4,6 +4,7 @@ uniform float uThreshold;
 uniform float uShape;
 uniform float uTime;
 uniform float uAvoidClipping;
+uniform bool uSmoothNormals;
 
 uniform vec3 uEyePosition;
 
@@ -40,11 +41,13 @@ bool isInBounds(const vec4 position)
 
 vec3 computeNormal(vec4 position, const vec3 fromEyeNormalized)
 {
-    // adjust position to have smooth normals
-    for (int iStep = 0; iStep < 10; iStep++) {
-        float currentFieldValue = sdf(position);
-        float adaptativeStepSize = 0.1 * currentFieldValue;
-        position.xyz += adaptativeStepSize * fromEyeNormalized;
+    if (uSmoothNormals) {
+        // adjust position to have smooth normals
+        for (int iStep = 0; iStep < 10; iStep++) {
+            float currentFieldValue = sdf(position);
+            float adaptativeStepSize = 0.1 * currentFieldValue;
+            position.xyz += adaptativeStepSize * fromEyeNormalized;
+        }
     }
 
     const float EPSILON = 0.0001;
