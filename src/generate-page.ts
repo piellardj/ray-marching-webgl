@@ -85,7 +85,7 @@ const data = {
                     min: 0.2,
                     max: 0.8,
                     value: 0.5,
-                    step: 0.025
+                    step: 0.01
                 },
                 {
                     type: Demopage.supportedControls.Checkbox,
@@ -100,7 +100,7 @@ const data = {
                     min: -0.8,
                     max: 1.5,
                     value: 0,
-                    step: 0.1
+                    step: 0.05
                 },
                 {
                     type: Demopage.supportedControls.Range,
