@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Readme page of my project 'Ray marching'. Basic ray marching experiments with a 3D or 4D noise field" />
+    <title>Ray marching - Explanations</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="stylesheet" type="text/css" href="css/page.css?v=2023-04-15T20%3A29%3A10.201Z">
+  </head>
+
+  <body>
+    <header>
+      <a class="logo logo-animate-fill" href="https://piellardj.github.io/ray-marching-webgl/" id="seep-live-button" title="Live project" aria-label="Live project">
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+          <g stroke-width="2">
+            <path fill="none" stroke-linejoin="round" d="M24,20v24L46,32z" />
+        </svg>
+      </a>
+    </header>
+    <main>
+      <div class="contents">
+        <h1 id="raymarchingwebgl">ray-marching-webgl</h1>
+        <h2 id="description">Description</h2>
+        <p>This project is a simple experiment combining ray marching and noise generation in three or four dimensions. I am sure there is a lot of room for shader optimization, however for this performance is not my focus.</p>
+        <p>See it live <a href="https://piellardj.github.io/ray-marching-webgl/">here</a>.</p>
+        <p><img src="https://github.com/piellardj/ray-marching-webgl/raw/master/src/readme/screenshot.png" alt="Screenshot" /></p>
+        <h2 id="details">Details</h2>
+        <h3 id="raymarching">Ray marching</h3>
+        <p>Ray marching requires a signed function to define the exterior and interior of the displayed object. In this project, I use a ℝ<sup>3</sup> ⟼ ℝ or ℝ<sup>4</sup> ⟼ ℝ noise field. The noise output is in [-0.5,+0.5] (plus a constant used to change the density parameter). The displayed isosurface is the one formed by the points where the noise is 0: positive values are ouside the object, negative lower are inside it.</p>
+        <p>Using noise fields gives interesting results visually, however it is very costly performance-wise because there is no nice formula to describe such a field. It needs to be evaluated for each step of each ray, so it requires a lot computation.</p>
+        <h4 id="intersectioncomputing">Intersection computing</h4>
+        <p>For simplicity, I chose to use a constant step size for the ray marching. Indeed, the noise fields I use are not exactly signed distance functions because they lack an interesting property: the value at a given point is not equal to the distance to the isosurface. However, I could have used an adaptative step size because the noise fields are continuous enough and their gradient is bounded. Given the scale of the noise and the local deformation of space, it is certainly possible to compute this bound.</p>
+        <h4 id="normalcomputing">Normal computing</h4>
+        <p>The normal is computed by taking 3 samples around the point, to compute the local gradient.</p>
+        <p>Since I take large constant-sized steps for the ray-marching, the rays often end up being quite far from the actual surface. This leads to discontinuities in the computed normals. Moreover these discontinuities are relative to the screenspace, so they appear to be moving with the camera, which is distracting.</p>
+        <p>To mitigate this issue, just before computing the normal, I do a little more ray-marching, this time using baby adaptative steps to try to get a bit closer to the surface. Using only 10 steps gives a satisfying result at an acceptable cost. However, sometimes there are still a few artifacts left.</p>
+        <p><img src="https://github.com/piellardj/ray-marching-webgl/raw/master/src/readme/normal-smoothing-off.png" alt="Without normal smoothing" />
+          <em>Without normal smoothing, the fixed step size creates displeasing discontinuities.</em>
+        </p>
+        <p><img src="https://github.com/piellardj/ray-marching-webgl/raw/master/src/readme/normal-smoothing-on.png" alt="Dilatation deformation" />
+          <em>With normal smoothing, these discontinuities are mostly hidden, except in some problematic areas.</em>
+        </p>
+        <h3 id="noisetypes">Noise types</h3>
+        <p>This project supports 3 types of noise: value noise, gradient noise and a simplex-like noise. Their different properties can be used to create various effects:</p>
+        <ul>
+          <li>value noise is computed by creating evenly-spaced points on the natural space-grid, evaluating a scalar value on each of those points and simply interpolating between them to fill the space. The result is very geometric and one can clearly see the underlying grid. It almost looks like plumbing.</li>
+          <li>gradient noise also uses points along the grid. However, contrarily to value noise, it is a vector value that is computed on each point. Then the influence of each point is computed using dot product, and the result is interpolated. Gradient noise is way more rounded, organic and natural looking than value noise. It is a tiny bit more heavy to compute.</li>
+          <li>simplex noise uses the same basic idea as gradient noise, however it doesn't use a euclidian grid: for instance, in 2D it uses triangles instead of squares, in 3D pyramids instead of cubes etc. It is theoretically way faster than gradient noise because it only requires evaluating and interpolating between 4 points instead of 8. It is supposed to look smoother than gradient noise, mostly because it doesn't use a square grid structure. I didn't implement it myself but borrowed it from other projects. I have to admit that I am a bit disappointed because the hexagonal structure is quite visible (especially for the 4D code). I supposed it is due to the implementation being over-simplified for performanced reasons.</li>
+        </ul>
+        <h3 id="deformation">Deformation</h3>
+        <p>To further explore the noise properties, a deformation can be applied to either dilate or contract space around the center of the sphere.</p>
+        <p><img src="https://github.com/piellardj/ray-marching-webgl/raw/master/src/readme/deformation-contraction.png" alt="Contraction deformation" />
+          <em>Contraction deformation</em>
+        </p>
+        <p><img src="https://github.com/piellardj/ray-marching-webgl/raw/master/src/readme/deformation-dilatation.png" alt="Dilatation deformation" />
+          <em>Dilatation deformation</em>
+        </p>
+        <h3 id="animation">Animation</h3>
+        <p>There are two animation modes that both allow for smooth continuous changes:</p>
+        <ul>
+          <li>the 4D mode, in which the noise field is 4-dimensional, the fourth dimension being time. This creates the unsettling impression of witnessing an otherwordly object crossing our dimension.</li>
+          <li>the 3D mode, which is cheaper since it only requires a 3-dimensional noise field. The time is simply used to translate the coordinates. This creates a pleasant flow effect.</li>
+        </ul>
+      </div>
+    </main>
+
+    <footer>
+      <div class="badge-shelf">
+        <a class="badge" href="mailto:jeremie.piellard@gmail.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32px" height="32px" viewBox="0 0 512 512">
+            <path d="M512 85V448H0V85l256 224L512 85zM488 64H24L256 267 488 64z" />
+          </svg>
+        </a>
+
+        <a class="badge" href="https://github.com/piellardj" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32px" height="32px" viewBox="0 0 1024 1024">
+            <path d="M512 0C229 0 0 229 0 512c0 226 147 418 350 486 26 5 35-11 35-25 0-12 0-53-1-95C242 909 212 818 212 818c-23-59-57-75-57-75-47-32 4-31 4-31 51 4 78 53 78 53 46 78 120 56 149 43 5-33 18-56 33-68C305 725 185 682 185 485c0-56 20-102 53-137-5-13-23-65 5-136 0 0 43-14 141 53 41-11 85-17 128-17 44 0 87 6 128 17 98-66 141-52 141-52 28 71 10 123 5 136 33 36 53 81 53 137 0 197-120 240-234 253 18 16 35 47 35 95 0 68-1 124-1 141 0 14 9 30 35 25C877 930 1024 738 1024 512 1024 229 795 0 512 0z" />
+          </svg>
+        </a>
+
+        <a class="badge" href="https://www.linkedin.com/in/jeremie-piellard/" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32px" height="32px" viewBox="0 0 512 512">
+            <path d="M30 177l93-1v304l-93 1v-304z" />
+            <path d="M200 177l89-1v39l0 11c26-26 53-45 97-45 51 0 100 21 100 91v208l-90 1v-159c0-35-9-58-51-58-37 0-52 7-52 55v160l-92 1v-304z" />
+            <path d="M128 81c0 28-23 51-51 51s-51-23-51-51c0-28 23-51 51-51 28 0 51 23 51 51z" />
+          </svg>
+        </a>
+      </div>
+    </footer>
+  </body>
+
+</html>

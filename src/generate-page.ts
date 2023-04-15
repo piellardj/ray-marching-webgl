@@ -10,6 +10,10 @@ const data = {
         "This project is a simple experiment that uses basic ray marching to visualize various 3D or 4D noise fields.",
     ],
     githubProjectName: "ray-marching-webgl",
+    readme: {
+        filepath: path.join(__dirname, "..", "README.md"),
+        branchName: "master"
+    },
     additionalLinks: [],
     styleFiles: [],
     scriptFiles: [
