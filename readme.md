@@ -5,6 +5,8 @@ This project is a simple experiment combining ray marching and noise generation 
 
 See it live [here](https://piellardj.github.io/ray-marching-webgl/).
 
+[![Donate](https://raw.githubusercontent.com/piellardj/piellardj.github.io/master/images/readme/donate-paypal.svg)](https://www.paypal.com/donate/?hosted_button_id=AF7H7GEJTL95E)
+
 ![Screenshot](src/readme/screenshot.png)
 
 ## Details
